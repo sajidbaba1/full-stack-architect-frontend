@@ -23,7 +23,13 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ idea, architecture
     Architecture Highlights:
     - Modules: ${architecture.springBootModules.join(', ')}
     - Components: ${architecture.reactComponents.join(', ')}
-    - Database: ${architecture.databaseSchema.substring(0, 200)}...
+    - Database: ${architecture.databaseSchema}
+
+    Project Folder Structure:
+    ${architecture.projectStructure}
+
+    Development Roadmap:
+    ${architecture.developmentPhases.join(' -> ')}
   `;
 
   useEffect(() => {

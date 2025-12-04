@@ -88,7 +88,7 @@ const architectureSchema: Schema = {
     // New Visual Features
     projectStructure: {
       type: Type.STRING,
-      description: "A complete ASCII tree visualization of the project folder structure (Backend and Frontend)"
+      description: "A detailed ASCII tree for a monorepo: /backend (Spring Boot standard layout) and /frontend (React Vite standard layout)"
     },
     developmentPhases: {
       type: Type.ARRAY,
