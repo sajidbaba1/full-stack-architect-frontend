@@ -1,0 +1,5 @@
+{
+  "name": "StackIdeator AI",
+  "description": "A specialized tool for developers to generate, visualize, and architect full-stack Spring Boot and React applications using Gemini AI.",
+  "requestFramePermissions": []
+}
