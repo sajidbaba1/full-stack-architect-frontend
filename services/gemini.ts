@@ -58,7 +58,7 @@ const architectureSchema: Schema = {
         }
       }
     },
-    // New Fields
+    // Extended Features
     userStories: {
       type: Type.ARRAY,
       items: { type: Type.STRING },
@@ -84,12 +84,22 @@ const architectureSchema: Schema = {
       type: Type.ARRAY,
       items: { type: Type.STRING },
       description: "Caching (Redis), lazy loading, etc."
+    },
+    // New Visual Features
+    projectStructure: {
+      type: Type.STRING,
+      description: "A complete ASCII tree visualization of the project folder structure (Backend and Frontend)"
+    },
+    developmentPhases: {
+      type: Type.ARRAY,
+      items: { type: Type.STRING },
+      description: "Step-by-step development roadmap (e.g., Phase 1: Setup, Phase 2: Core API)"
     }
   },
   required: [
     "databaseSchema", "springBootModules", "reactComponents", "apiEndpoints",
     "userStories", "securityStrategy", "stateManagement", "deploymentStrategy",
-    "externalIntegrations", "performanceOptimizations"
+    "externalIntegrations", "performanceOptimizations", "projectStructure", "developmentPhases"
   ]
 };
 
@@ -129,8 +139,8 @@ export const generateArchitecture = async (ideaTitle: string, description: strin
       contents: `Design the deep technical architecture for a Spring Boot + React app called "${ideaTitle}". 
       Description: ${description}. 
       
-      Provide a comprehensive 10-point technical breakdown including:
-      1. Database Schema
+      Provide a comprehensive technical breakdown including these 12 points:
+      1. Database Schema (SQL)
       2. Spring Boot Modules
       3. React Component Tree
       4. API Endpoints
@@ -139,7 +149,9 @@ export const generateArchitecture = async (ideaTitle: string, description: strin
       7. State Management
       8. Deployment Strategy
       9. External Integrations
-      10. Performance Optimizations`,
+      10. Performance Optimizations
+      11. Project Folder Structure (ASCII Tree)
+      12. Development Roadmap (Phases)`,
       config: {
         responseMimeType: "application/json",
         responseSchema: architectureSchema,

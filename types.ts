@@ -29,6 +29,10 @@ export interface ArchitectureDetails {
   deploymentStrategy: string[];
   externalIntegrations: string[];
   performanceOptimizations: string[];
+
+  // New Features (Total 12)
+  projectStructure: string; // ASCII Folder Tree
+  developmentPhases: string[]; // Implementation Roadmap
 }
 
 export interface ChatMessage {
