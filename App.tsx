@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { generateAppIdeas, generateArchitecture } from './services/gemini';
-import { AppIdea, ArchitectureDetails } from './types';
+import { AppIdea, ArchitectureDetails, SavedProject } from './types';
 import { IdeaCard } from './components/IdeaCard';
 import { ArchitectureView } from './components/ArchitectureView';
 import { ChatInterface } from './components/ChatInterface';
+import { SavedProjectsSidebar } from './components/SavedProjectsSidebar';
 import { Button } from './components/Button';
-import { Sparkles, Layers, Terminal, Github, Cpu, MessageSquare } from 'lucide-react';
+import { Sparkles, Layers, Terminal, Github, Cpu, HardDrive } from 'lucide-react';
 
 const SUGGESTED_NICHES = [
   "E-commerce",
@@ -24,9 +25,55 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [archLoading, setArchLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Saved Projects State
+  const [savedProjects, setSavedProjects] = useState<SavedProject[]>([]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const ideasSectionRef = useRef<HTMLDivElement>(null);
   const archSectionRef = useRef<HTMLDivElement>(null);
+
+  // Load saved projects from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('stackideator_projects');
+    if (saved) {
+      try {
+        setSavedProjects(JSON.parse(saved));
+      } catch (e) {
+        console.error('Failed to parse saved projects', e);
+      }
+    }
+  }, []);
+
+  const handleSaveProject = () => {
+    if (!selectedIdea || !architecture) return;
+    
+    const newProject: SavedProject = {
+      id: Date.now().toString(),
+      idea: selectedIdea,
+      architecture: architecture,
+      createdAt: Date.now()
+    };
+
+    const updatedProjects = [newProject, ...savedProjects];
+    setSavedProjects(updatedProjects);
+    localStorage.setItem('stackideator_projects', JSON.stringify(updatedProjects));
+  };
+
+  const handleDeleteProject = (projectId: string) => {
+    const updatedProjects = savedProjects.filter(p => p.id !== projectId);
+    setSavedProjects(updatedProjects);
+    localStorage.setItem('stackideator_projects', JSON.stringify(updatedProjects));
+  };
+
+  const handleLoadProject = (project: SavedProject) => {
+    setSelectedIdea(project.idea);
+    setArchitecture(project.architecture);
+    setIsSidebarOpen(false);
+    setTimeout(() => {
+      archSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
 
   const handleGenerateIdeas = async () => {
     if (!niche.trim()) return;
@@ -70,8 +117,17 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#0f172a] text-slate-200 selection:bg-indigo-500/30">
+      
+      <SavedProjectsSidebar 
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        projects={savedProjects}
+        onLoad={handleLoadProject}
+        onDelete={handleDeleteProject}
+      />
+
       {/* Header */}
-      <header className="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
+      <header className="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="bg-indigo-600 p-1.5 rounded-lg">
@@ -82,7 +138,18 @@ const App: React.FC = () => {
             </span>
           </div>
           <div className="flex items-center gap-4">
-             <span className="text-xs font-medium px-2 py-1 rounded bg-slate-800 border border-slate-700 text-slate-400 flex items-center gap-1">
+             <button 
+                onClick={() => setIsSidebarOpen(true)}
+                className="text-sm font-medium text-slate-300 hover:text-white flex items-center gap-2 hover:bg-slate-800 px-3 py-1.5 rounded-lg transition-all"
+             >
+                <HardDrive className="w-4 h-4" />
+                <span className="hidden sm:inline">Saved Projects</span>
+                <span className="bg-indigo-600 text-white text-[10px] px-1.5 rounded-full min-w-[1.25rem] h-5 flex items-center justify-center">
+                  {savedProjects.length}
+                </span>
+             </button>
+             <span className="h-6 w-px bg-slate-700 hidden sm:block"></span>
+             <span className="text-xs font-medium px-2 py-1 rounded bg-slate-800 border border-slate-700 text-slate-400 hidden sm:flex items-center gap-1">
                 <Cpu className="w-3 h-3" /> Gemini 2.5 Flash
              </span>
              <a href="#" className="text-slate-400 hover:text-white transition-colors">
@@ -181,7 +248,11 @@ const App: React.FC = () => {
           {selectedIdea && architecture && !archLoading && (
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
               <div className="xl:col-span-2">
-                 <ArchitectureView idea={selectedIdea} architecture={architecture} />
+                 <ArchitectureView 
+                    idea={selectedIdea} 
+                    architecture={architecture} 
+                    onSave={handleSaveProject}
+                 />
               </div>
               <div className="xl:col-span-1">
                  <div className="sticky top-24">

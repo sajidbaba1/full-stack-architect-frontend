@@ -46,6 +46,13 @@ export interface ArchitectureDetails {
   };
 }
 
+export interface SavedProject {
+  id: string;
+  idea: AppIdea;
+  architecture: ArchitectureDetails;
+  createdAt: number;
+}
+
 export interface ChatMessage {
   id: string;
   role: 'user' | 'model';
