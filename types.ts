@@ -30,9 +30,20 @@ export interface ArchitectureDetails {
   externalIntegrations: string[];
   performanceOptimizations: string[];
 
-  // New Features (Total 12)
+  // Visual Features (Total 12)
   projectStructure: string; // ASCII Folder Tree
   developmentPhases: string[]; // Implementation Roadmap
+
+  // New Analytical & Visual Features
+  projectEstimation: {
+    totalWeeks: number;
+    complexityScore: number; // 1-100
+    teamSizeRecommendation: number;
+  };
+  mermaidDiagrams: {
+    erd: string; // Mermaid ER Diagram syntax
+    sequence: string; // Mermaid Sequence Diagram syntax
+  };
 }
 
 export interface ChatMessage {

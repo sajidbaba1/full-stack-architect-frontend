@@ -58,7 +58,6 @@ const architectureSchema: Schema = {
         }
       }
     },
-    // Extended Features
     userStories: {
       type: Type.ARRAY,
       items: { type: Type.STRING },
@@ -85,7 +84,6 @@ const architectureSchema: Schema = {
       items: { type: Type.STRING },
       description: "Caching (Redis), lazy loading, etc."
     },
-    // New Visual Features
     projectStructure: {
       type: Type.STRING,
       description: "A detailed ASCII tree for a monorepo: /backend (Spring Boot standard layout) and /frontend (React Vite standard layout)"
@@ -94,12 +92,31 @@ const architectureSchema: Schema = {
       type: Type.ARRAY,
       items: { type: Type.STRING },
       description: "Step-by-step development roadmap (e.g., Phase 1: Setup, Phase 2: Core API)"
+    },
+    // New Fields
+    projectEstimation: {
+      type: Type.OBJECT,
+      properties: {
+        totalWeeks: { type: Type.INTEGER, description: "Estimated weeks to MVP" },
+        complexityScore: { type: Type.INTEGER, description: "0-100 difficulty score" },
+        teamSizeRecommendation: { type: Type.INTEGER, description: "Recommended dev count" }
+      },
+      required: ["totalWeeks", "complexityScore", "teamSizeRecommendation"]
+    },
+    mermaidDiagrams: {
+      type: Type.OBJECT,
+      properties: {
+        erd: { type: Type.STRING, description: "Valid Mermaid.js 'erDiagram' syntax code for the database. Do not use '```mermaid' tags." },
+        sequence: { type: Type.STRING, description: "Valid Mermaid.js 'sequenceDiagram' syntax code for the main user flow. Do not use '```mermaid' tags." }
+      },
+      required: ["erd", "sequence"]
     }
   },
   required: [
     "databaseSchema", "springBootModules", "reactComponents", "apiEndpoints",
     "userStories", "securityStrategy", "stateManagement", "deploymentStrategy",
-    "externalIntegrations", "performanceOptimizations", "projectStructure", "developmentPhases"
+    "externalIntegrations", "performanceOptimizations", "projectStructure", 
+    "developmentPhases", "projectEstimation", "mermaidDiagrams"
   ]
 };
 
@@ -139,19 +156,12 @@ export const generateArchitecture = async (ideaTitle: string, description: strin
       contents: `Design the deep technical architecture for a Spring Boot + React app called "${ideaTitle}". 
       Description: ${description}. 
       
-      Provide a comprehensive technical breakdown including these 12 points:
-      1. Database Schema (SQL)
-      2. Spring Boot Modules
-      3. React Component Tree
-      4. API Endpoints
-      5. User Stories
-      6. Security Strategy
-      7. State Management
-      8. Deployment Strategy
-      9. External Integrations
-      10. Performance Optimizations
-      11. Project Folder Structure (ASCII Tree)
-      12. Development Roadmap (Phases)`,
+      Provide a comprehensive technical breakdown including visual diagrams and estimations.
+      
+      Important for Mermaid Diagrams:
+      1. 'erd': Use standard Mermaid 'erDiagram' syntax. Define entities and relationships (||--o{).
+      2. 'sequence': Use standard Mermaid 'sequenceDiagram' syntax. Show the flow between Client, API, Service, and Database.
+      3. Do NOT include markdown code blocks (backticks) in the mermaid strings.`,
       config: {
         responseMimeType: "application/json",
         responseSchema: architectureSchema,
